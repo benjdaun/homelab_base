@@ -1,0 +1,15 @@
+global:
+  domain: pop-os
+server:
+  service:
+    type: ClusterIP  # ClusterIP is the default, no need for LoadBalancer
+
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - pop-os  # Replace with your domain
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+
+installCRDs: true
