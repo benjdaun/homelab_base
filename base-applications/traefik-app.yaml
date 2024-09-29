@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://traefik.github.io/charts
+    targetRevision: 32.0.0 # Use the desired chart version
+    chart: traefik
+    helm:
+      parameters:
+        - name: image.tag
+          value: "3.1.0"
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
