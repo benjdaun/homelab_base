@@ -8,13 +8,13 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`argo.beavertech.xyz`)
+      match: Host(`homelab.beavertech.xyz`)
       priority: 10
       services:
         - name: argocd-server
           port: 80
     - kind: Rule
-      match: Host(`argo.beavertech.xyz`) && Header(`Content-Type`, `application/grpc`)
+      match: Host(`homelab.beavertech.xyz`) && Header(`Content-Type`, `application/grpc`)
       priority: 11
       services:
         - name: argocd-server
