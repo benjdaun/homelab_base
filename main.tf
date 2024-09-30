@@ -14,3 +14,25 @@ resource "helm_release" "argo_cd" {
 
 }
 
+data "bitwarden_item_login" "github_credential" {
+  search = "github-homelab-pat"
+}
+
+resource "kubernetes_secret" "github_credential" {
+  metadata {
+    name = "github-homelab-cred"
+    namespace = "argocd"
+    labels = {
+      "argocd.argoproj.io/secret-type"="repository",
+
+    }
+  }
+  data = {
+    username = data.bitwarden_item_login.github_credential.username
+    password = data.bitwarden_item_login.github_credential.password
+    project = "default"
+    type = "git"
+    url = "https://github.com/benjdaun/homelab_base"
+
+  }
+}
