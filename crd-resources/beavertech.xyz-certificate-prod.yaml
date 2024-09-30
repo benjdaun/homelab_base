@@ -1,7 +1,7 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: beavertech-cert
+  name: beavertech-prod-cert
   namespace: kube-system # This should be the same namespace as your Gateway
 spec:
   secretName: beavertech-prod-cert # The secret that stores the TLS certificate
