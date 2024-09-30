@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: beavertech-cert
+  namespace: kube-system # This should be the same namespace as your Gateway
+spec:
+  secretName: beavertech-cert # The secret that stores the TLS certificate
+  dnsNames:
+    - "*.beavertech.xyz"
+  issuerRef:
+    name: homelab-staging-issuer # Name of your ClusterIssuer
+    kind: ClusterIssuer
+    group: cert-manager.io
