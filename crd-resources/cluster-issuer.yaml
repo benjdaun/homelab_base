@@ -1,7 +1,7 @@
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: example-issuer
+  name: homelab-staging-issuer
 spec:
   acme:
     email: benjamindaunoravicius@gmail.com
