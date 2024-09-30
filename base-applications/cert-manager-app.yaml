@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+spec:
+  project: default
+  sources:
+  - repoURL: https://charts.jetstack.io
+    targetRevision: v1.15.3 # Use the desired chart version
+    chart: traefik
+    helm:
+      valueFiles:
+      - $values/configuration/cert-manager-values.yaml
+  - repoURL: https://github.com/benjdaun/homelab_base
+    targetRevision: main
+    ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
