@@ -11,6 +11,8 @@ providers:
     enabled: true
 # Allow the Gateway to expose HTTPRoute from all namespaces
 gateway:
-  namespacePolicy: All
+  listeners:
+    web:
+      namespacePolicy: All
 experimental:
   kubernetesgateway: true
