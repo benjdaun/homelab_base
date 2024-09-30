@@ -45,9 +45,9 @@ spec:
         - path:
             type: PathPrefix
             value: /
-      forwardTo:
-        - serviceName: argocd-server
-          port: 80
+      backendRefs:
+      - name: argocd-server
+        port: 80
 
 ---
 

@@ -5,14 +5,13 @@ metadata:
   namespace: argocd
 spec:
   project: default
-
   sources:
   - repoURL: https://traefik.github.io/charts
     targetRevision: 32.0.0 # Use the desired chart version
     chart: traefik
     helm:
-    valueFiles:
-    - $values/configuration/traefik-values.yaml
+      valueFiles:
+      - $values/configuration/traefik-values.yaml
   - repoURL: https://github.com/benjdaun/homelab_base
     targetRevision: main
     ref: values
