@@ -12,6 +12,8 @@ spec:
     path: crd-resources
     repoURL: https://github.com/benjdaun/homelab_base
     targetRevision: main
+    directory:
+      recurse: true
   syncPolicy:
     automated:
       prune: true
