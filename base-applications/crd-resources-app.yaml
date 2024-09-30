@@ -2,6 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: crd-resources
+  namespace: argocd
 spec:
   destination:
     namespace: argocd
@@ -11,3 +12,7 @@ spec:
     path: crd-resources
     repoURL: https://github.com/benjdaun/homelab_base
     targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
