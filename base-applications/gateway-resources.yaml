@@ -6,6 +6,7 @@ metadata:
 spec:
   parentRefs:
     - name: traefik-gateway
+      namespace: kube-system
   hostnames:
     - argo.beavertech.xyz
   rules:
