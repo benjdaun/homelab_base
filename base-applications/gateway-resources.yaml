@@ -1,0 +1,72 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: GatewayClass
+metadata:
+  name: traefik-gateway-class
+spec:
+  controllerName: traefik.io/gateway-controller
+
+---
+
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  name: traefik-gateway
+  namespace: kube-system
+spec:
+  gatewayClassName: traefik-gateway-class
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: grpc
+      protocol: GRPC
+      port: 50051
+      allowedRoutes:
+        namespaces:
+          from: All
+
+---
+
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: argo-http
+  namespace: argocd
+spec:
+  parentRefs:
+    - name: traefik-gateway
+  hostnames:
+    - argo.beavertech.xyz
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      forwardTo:
+        - serviceName: argocd-server
+          port: 80
+
+---
+
+#apiVersion: gateway.networking.k8s.io/v1alpha2
+#kind: GRPCRoute
+#metadata:
+#  name: my-grpc-route
+#  namespace: default
+#spec:
+#  parentRefs:
+#    - name: my-gateway
+#  hostnames:
+#    - argo.beavertech.xyz
+#  rules:
+#    - matches:
+#        - method:
+#            type: Exact
+#            value: "my.grpc.Service/MyMethod"
+#      backendRefs:
+#        - name: my-grpc-service
+#          port: 50051
+#
