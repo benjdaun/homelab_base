@@ -36,3 +36,22 @@ resource "kubernetes_secret" "github_credential" {
 
   }
 }
+
+resource "kubernetes_namespace" "secrets_management" {
+  metadata {
+    name = "secrets-management"
+  }
+}
+
+resource "kubernetes_secret" "bitwarden_cli" {
+  metadata {
+    name = "bitwarden-cli"
+    namespace = "secrets-management"
+  }
+  data = {
+    BW_HOST = "https://vault.bitwarden.com/"
+    BW_USERNAME = "benjamindaunoravicius@gmail.com"
+    BW_PASSWORD = var.bitwarden_password
+
+  }
+}
