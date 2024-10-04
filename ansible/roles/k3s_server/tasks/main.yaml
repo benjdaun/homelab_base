@@ -1,0 +1,12 @@
+---
+- name: Download and install k3s as a server
+  shell: |
+    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --disable traefik" sh -
+  args:
+    creates: /usr/local/bin/k3s
+
+- name: Ensure k3s service is enabled and started
+  systemd:
+    name: k3s
+    enabled: true
+    state: started

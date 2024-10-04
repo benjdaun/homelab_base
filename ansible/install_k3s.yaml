@@ -1,0 +1,14 @@
+---
+- hosts: k3s_server
+  become: true
+  tasks:
+    - name: Install k3s on the server
+      include_role:
+        name: k3s_server
+
+- hosts: k3s_agent
+  become: true
+  tasks:
+    - name: Install k3s on the agent
+      include_role:
+        name: k3s_agent
