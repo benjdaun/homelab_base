@@ -1,0 +1,24 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: longhorn-ui
+  namespace: longhorn-system
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "longhorn.beavertech.xyz"
+
+spec:
+  parentRefs:
+    - name: traefik-gateway
+      namespace: kube-system
+  hostnames:
+    - longhorn.beavertech.xyz
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+      - name: longhorn-frontend
+        port: 80
+
+---
