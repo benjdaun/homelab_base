@@ -11,8 +11,8 @@ resources:
   requests:
     memory: 128Mi
     cpu: 100m
-logLevel: debug
-policy: upsert-only
+logLevel: trace
+policy: sync
 txtOwnerId: "beavertech-external-dns"
 serviceAccount:
   create: true
