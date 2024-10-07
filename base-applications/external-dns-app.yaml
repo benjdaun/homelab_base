@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   sources:
-  - repoURL: oci://registry-1.docker.io
+  - repoURL: https://charts.bitnami.com/bitnami
     targetRevision: 8.3.9
-    chart: bitnamicharts/external-dns
+    chart: external-dns
     helm:
       valueFiles:
       - $values/configuration/external-dns-values.yaml
