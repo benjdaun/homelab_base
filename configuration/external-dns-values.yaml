@@ -20,3 +20,4 @@ sources:
 - ingress
 - service
 - gateway-httproute
+interval: "15s"
