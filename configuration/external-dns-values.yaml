@@ -13,7 +13,6 @@ resources:
     cpu: 100m
 logLevel: trace
 policy: sync
-txtOwnerId: "beavertech-external-dns"
 serviceAccount:
   create: true
   name: external-dns
