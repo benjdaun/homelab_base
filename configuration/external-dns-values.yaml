@@ -17,3 +17,8 @@ txtOwnerId: "beavertech-external-dns"
 serviceAccount:
   create: true
   name: external-dns
+extraArgs:
+  - --source=gateway-httproute
+  - --source=gateway-tlsroute
+  - --source=gateway-tcproute
+  - --source=gateway-udproute
