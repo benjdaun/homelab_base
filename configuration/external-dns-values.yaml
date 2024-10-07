@@ -1,0 +1,19 @@
+provider: cloudflare
+cloudflare:
+  secretName: cloudflare-external-dns
+  email: "benjamindaunoravicius@gmail.com"
+  proxied: false
+domainFilters:
+  - "beavertech.xyz"
+rbac:
+  create: true
+resources:
+  requests:
+    memory: 128Mi
+    cpu: 100m
+logLevel: debug
+policy: upsert-only
+txtOwnerId: "beavertech-external-dns"
+serviceAccount:
+  create: true
+  name: external-dns

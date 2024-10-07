@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-dns
+  namespace: argocd
+spec:
+  project: default
+  sources:
+  - repoURL: oci://registry-1.docker.io
+    targetRevision: 8.3.9
+    chart: bitnamicharts/external-dns
+    helm:
+      valueFiles:
+      - $values/configuration/external-dns-values.yaml
+  - repoURL: https://github.com/benjdaun/homelab_base
+    targetRevision: main
+    ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: external-dns
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
