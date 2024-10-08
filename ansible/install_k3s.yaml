@@ -12,3 +12,22 @@
     - name: Install k3s on the agent
       include_role:
         name: k3s_agent
+
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install open-iscsi package
+      ansible.builtin.package:
+        name: open-iscsi
+        state: present
+
+    - name: Enable and start iscsid service
+      ansible.builtin.systemd:
+        name: iscsid
+        enabled: yes
+        state: started
+
+    - name: Ensure iscsid daemon is running
+      ansible.builtin.systemd:
+        name: iscsid
+        state: started

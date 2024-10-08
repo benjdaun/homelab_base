@@ -1,12 +1,34 @@
 ---
 - name: Download and install k3s as a server
   shell: |
-    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --disable traefik" sh -
+    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --disable traefik --node-name {{ node_name }}" sh -
   args:
     creates: /usr/local/bin/k3s
+  tags:
+  - always
 
 - name: Ensure k3s service is enabled and started
   systemd:
     name: k3s
     enabled: true
     state: started
+
+- name: Modify kubeconfig to use the correct server (localhost by default)
+  lineinfile:
+    path: /etc/rancher/k3s/k3s.yaml
+    regexp: '^    server:'
+    line: "    server: https://{{ ansible_host }}:6443"
+
+- name: Fetch kubeconfig from remote server
+  fetch:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: /tmp/k3s_{{ inventory_hostname }}_kubeconfig
+    flat: yes
+
+- name: Merge fetched kubeconfig with local kubeconfig
+  shell: |
+    export KUBECONFIG=/tmp/k3s_{{ inventory_hostname }}_kubeconfig:~/.kube/config
+    kubectl config view --flatten > /tmp/merged_kubeconfig
+    mv /tmp/merged_kubeconfig /home/benjdaun/.kube/config
+  delegate_to: localhost
+  run_once: true
