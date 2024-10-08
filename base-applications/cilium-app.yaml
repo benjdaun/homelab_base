@@ -1,27 +1,27 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: cilium
-  namespace: argocd
-spec:
-  project: default
-  sources:
-  - repoURL: https://helm.cilium.io
-    targetRevision: 1.16.2
-    chart: cilium
-    helm:
-      valueFiles:
-      - $values/configuration/cilium-values.yaml
-  - repoURL: https://github.com/benjdaun/homelab_base
-    targetRevision: main
-    ref: values
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: cilium
+#   namespace: argocd
+# spec:
+#   project: default
+#   sources:
+#   - repoURL: https://helm.cilium.io
+#     targetRevision: 1.16.2
+#     chart: cilium
+#     helm:
+#       valueFiles:
+#       - $values/configuration/cilium-values.yaml
+#   - repoURL: https://github.com/benjdaun/homelab_base
+#     targetRevision: main
+#     ref: values
 
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: kube-system
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: kube-system
 
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
 
