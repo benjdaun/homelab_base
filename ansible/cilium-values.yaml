@@ -1,0 +1,8 @@
+ipam:
+  operator:
+    clusterPoolIPv4PodCIDRList: "10.42.0.0/16"
+kubeProxyReplacement: true
+gatewayAPI:
+  enabled: true
+k8sServiceHost: 192.168.0.39
+k8sServicePort: 6443

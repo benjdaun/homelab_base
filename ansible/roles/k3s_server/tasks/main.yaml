@@ -1,7 +1,7 @@
 ---
 - name: Download and install k3s as a server
   shell: |
-    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --disable traefik --node-name {{ node_name }}" sh -
+    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --disable traefik --flannel-backend=none --disable-kube-proxy --disable-network-policy --node-name {{ node_name }}" sh -
   args:
     creates: /usr/local/bin/k3s
   tags:
@@ -32,3 +32,10 @@
     mv /tmp/merged_kubeconfig /home/benjdaun/.kube/config
   delegate_to: localhost
   run_once: true
+
+- name: Install Cilium
+  shell: |
+    cilium install -f /home/benjdaun/homelab_base/ansible/cilium-values.yaml
+  delegate_to: localhost
+  become: true
+  become_user: benjdaun

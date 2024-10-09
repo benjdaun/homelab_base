@@ -1,6 +1,0 @@
-ipam:
-  operator:
-    clusterPoolIPv4PodCIDRList: "10.44.0.0/16"
-kubeProxyReplacement: true
-gatewayAPI:
-  enabled: true
