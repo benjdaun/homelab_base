@@ -56,7 +56,19 @@ resource "kubernetes_secret" "bitwarden_cli" {
   }
 }
 
-resource kubectl_manifest base_app {
-  provider = kubectl
-  yaml_body = file("base-application.yaml")
+resource "null_resource" "base_app" {
+  triggers = {
+    manifest_sha1 = sha1(file("${path.module}/base-application.yaml"))
+  }
+
+  provisioner "local-exec" {
+    command = "kubectl apply -f ${path.module}/base-application.yaml"
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "kubectl delete -f ${path.module}/base-application.yaml"
+  }
+
+  depends_on = [helm_release.argo_cd, kubernetes_secret.github_credential]
 }
