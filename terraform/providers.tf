@@ -7,11 +7,19 @@ provider "helm" {
     config_path = "~/.kube/config" # Adjust if your kubeconfig is elsewhere
   }
 }
+
+provider "kubectl" {
+  
+}
 terraform {
   required_providers {
     bitwarden = {
       source  = "maxlaverse/bitwarden"
       version = ">= 0.9.0"
+    }
+    kubectl = {
+      source = "gavinbunney/kubectl"
+      version = "1.14.0"
     }
   }
 }

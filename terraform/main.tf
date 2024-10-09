@@ -7,7 +7,7 @@ resource "helm_release" "argo_cd" {
 
   # Optional: You can customize the values.yaml here or use an external file
   values = [
-    file("${path.module}/values.yaml") # External values.yaml file (optional)
+    file("${path.module}/argocd-values.yaml") # External values.yaml file (optional)
   ]
 
   create_namespace = true # Create namespace if it doesn't exist
@@ -54,4 +54,9 @@ resource "kubernetes_secret" "bitwarden_cli" {
     BW_PASSWORD = var.bitwarden_password
 
   }
+}
+
+resource kubectl_manifest base_app {
+  provider = kubectl
+  yaml_body = file("base-application.yaml")
 }
