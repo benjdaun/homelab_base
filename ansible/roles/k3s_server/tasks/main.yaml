@@ -32,10 +32,3 @@
     mv /tmp/merged_kubeconfig /home/benjdaun/.kube/config
   delegate_to: localhost
   run_once: true
-
-- name: Install Cilium
-  shell: |
-    cilium install -f /home/benjdaun/homelab_base/ansible/cilium-values.yaml
-  delegate_to: localhost
-  become: true
-  become_user: benjdaun
