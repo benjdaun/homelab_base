@@ -1,0 +1,26 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: cilium-gateway
+  namespace: kube-system
+spec:
+  gatewayClassName: cilium
+  listeners:
+  - name: cilium-http 
+    allowedRoutes:                                                                                     
+      namespaces:                                                                                      
+        from: All                                                                                                                                                                   
+    port: 8000                                                                                         
+    protocol: HTTP                                                                                     
+  - name: cilium-https
+    allowedRoutes:                                                                                     
+      namespaces:                                                                                      
+        from: All  
+    protocol: HTTPS
+    port: 8443
+    hostname: "*.beavertech.xyz"
+    tls:
+      certificateRefs:
+      - kind: Secret
+        name: beavertech-prod-cert
+      mode: Terminate
