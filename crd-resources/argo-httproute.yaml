@@ -1,41 +1,26 @@
-apiVersion: gateway.networking.k8s.io/v1beta1
-kind: HTTPRoute
-metadata:
-  name: argo-http
-  namespace: argocd
-spec:
-  parentRefs:
-    - name: cilium-gateway
-      namespace: kube-system
-  hostnames:
-    - argo.beavertech.xyz
-  rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
-      backendRefs:
-      - name: argocd-server
-        port: 80
-
----
-
-#apiVersion: gateway.networking.k8s.io/v1alpha2
-#kind: GRPCRoute
-#metadata:
-#  name: my-grpc-route
-#  namespace: default
-#spec:
-#  parentRefs:
-#    - name: my-gateway
-#  hostnames:
-#    - argo.beavertech.xyz
-#  rules:
-#    - matches:
-#        - method:
-#            type: Exact
-#            value: "my.grpc.Service/MyMethod"
-#      backendRefs:
-#        - name: my-grpc-service
-#          port: 50051
-#
+apiVersion: gateway.networking.k8s.io/v1                                                               
+kind: HTTPRoute                                                                                        
+metadata:                                                                                                                                                                                    
+  labels:                                                                                              
+    argocd.argoproj.io/instance: crd-resources                                                         
+  name: argo-ui                                                                                    
+  namespace: argocd                                                                                                                                    
+spec:                                                                                                  
+  hostnames:                                                                                           
+  - argo.beavertech.xyz                                                                            
+  parentRefs:                                                                                          
+  - group: gateway.networking.k8s.io                                                                   
+    kind: Gateway                                                                                      
+    name: cilium-gateway                                                                               
+    namespace: kube-system                                                                             
+  rules:                                                                                               
+  - backendRefs:                                                                                       
+    - group: ""                                                                                        
+      kind: Service                                                                                    
+      name: argocd-server                                                                         
+      port: 80                                                                                         
+      weight: 1                                                                                        
+    matches:                                                                                           
+    - path:                                                                                            
+        type: PathPrefix                                                                               
+        value: /    
