@@ -10,14 +10,14 @@ spec:
     allowedRoutes:                                                                                     
       namespaces:                                                                                      
         from: All                                                                                                                                                                   
-    port: 8000                                                                                         
+    port: 80
     protocol: HTTP                                                                                     
   - name: cilium-https
     allowedRoutes:                                                                                     
       namespaces:                                                                                      
         from: All  
     protocol: HTTPS
-    port: 8443
+    port: 443
     hostname: "*.beavertech.xyz"
     tls:
       certificateRefs:
