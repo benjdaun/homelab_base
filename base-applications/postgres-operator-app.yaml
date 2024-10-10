@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: crunchy-data-pg-operator
+  namespace: argocd
+spec:
+  project: default
+  sources:
+  - repoURL: registry.developers.crunchydata.com/crunchydata
+    targetRevision: 5.6.1 # Use the desired chart version
+    chart: pgo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: crunchy-data-pg-operator
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
