@@ -20,7 +20,7 @@ grafana:
       - kubernetes.io/pvc-protection
 prometheus:
   prometheusSpec:
-    storage:
+    storageSpec:
      volumeClaimTemplate:
        spec:
          storageClassName: longhorn
