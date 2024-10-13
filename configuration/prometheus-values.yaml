@@ -1,3 +1,33 @@
+alertmanager:
+  alertmanagerSpec:
+    storage:
+     volumeClaimTemplate:
+       spec:
+         storageClassName: longhorn
+         accessModes: ["ReadWriteOnce"]
+         resources:
+           requests:
+             storage: 1Gi
+grafana:
+  persistence:
+    enabled: true
+    type: sts
+    storageClassName: "longhorn"
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+    finalizers:
+      - kubernetes.io/pvc-protection
+prometheus:
+  prometheusSpec:
+    storage:
+     volumeClaimTemplate:
+       spec:
+         storageClassName: longhorn
+         accessModes: ["ReadWriteOnce"]
+         resources:
+           requests:
+             storage: 20Gi
 prometheusOperator:
   enabled: true
 
@@ -15,7 +45,7 @@ prometheusOperator:
   ## Prometheus-Operator v0.39.0 and later support TLS natively.
   ##
   tls:
-    enabled: false
+    enabled: true
     # Value must match version names from https://golang.org/pkg/crypto/tls/#pkg-constants
     tlsMinVersion: VersionTLS13
     # The default webhook port is 10250 in order to work out-of-the-box in GKE private clusters and avoid adding firewall rules.
