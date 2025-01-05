@@ -1,0 +1,4 @@
+- hosts: master
+  become: yes
+  roles:
+    - k3s-server

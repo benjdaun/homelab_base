@@ -1,0 +1,6 @@
+- name: Join additional servers to the cluster
+  shell: |
+    curl -sfL https://get.k3s.io | K3S_TOKEN={{ hostvars[groups['master'][0]]['k3s_cluster_token'] }} sh -s - server \
+      --server https://{{ groups['master'][0] }}:6443
+  become: yes
+  when: inventory_hostname != groups['master'][0]

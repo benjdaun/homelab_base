@@ -1,0 +1,6 @@
+---
+- include_tasks: install.yml
+  when: inventory_hostname == groups['master'][0]
+
+- include_tasks: join.yml
+  when: inventory_hostname != groups['master'][0]
