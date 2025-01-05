@@ -7,7 +7,7 @@ spec:
   project: default
   sources:
   - repoURL: https://traefik.github.io/charts
-    targetRevision: v3.2.2 # Specify the desired chart version
+    targetRevision: 33.2.1 # Specify the desired chart version
     chart: traefik
     helm:
       valueFiles:
