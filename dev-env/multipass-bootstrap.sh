@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # Configuration
-VM_SET_FILE="/home/benjdaun/homelab_base/dev-env/vm-set.yaml" # Path to the VM set file
+BASE_DIR=$(git rev-parse --show-toplevel)
+VM_SET_FILE="$BASE_DIR/dev-env/multipass-vm-set.yaml" # Path to the VM set file
 CPUS=3                         # Number of CPUs per VM
 MEMORY="7G"                    # RAM per VM
 DISK="20G"                     # Disk space per VM
 SSH_KEY="$HOME/.ssh/id_rsa_homelab.pub" # Path to your SSH public key
-INVENTORY_FILE="/home/benjdaun/homelab_base/ansible/inventory/hosts.ini" # Ansible inventory file
+INVENTORY_FILE="$BASE_DIR/ansible/inventory/hosts.ini" # Ansible inventory file
 
 # Check if yq is installed
 if ! command -v yq &> /dev/null; then
