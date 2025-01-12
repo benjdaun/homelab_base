@@ -8,3 +8,36 @@
   become: yes
   roles:
     - k3s-agent
+
+- hosts: localhost
+  become: true
+  become_user: benjdaun
+  tasks:
+    - name: Apply Kubernetes Gateway API CRDs
+      shell: |
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml && \
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml && \
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml && \
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml && \
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml && \
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
+
+
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install open-iscsi package
+      ansible.builtin.package:
+        name: open-iscsi
+        state: present
+
+    - name: Enable and start iscsid service
+      ansible.builtin.systemd:
+        name: iscsid
+        enabled: yes
+        state: started
+
+    - name: Ensure iscsid daemon is running
+      ansible.builtin.systemd:
+        name: iscsid
+        state: started

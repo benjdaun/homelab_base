@@ -1,0 +1,33 @@
+---
+- name: Install keepalived
+  apt:
+    name: keepalived
+    state: present
+  become: yes
+  tags: keepalived
+
+- name: Calculate keepalived virtual IP
+  set_fact:
+    keepalived_vip: "{{ groups['master'][0] | ansible.utils.ipmath(2) }}"
+  tags: keepalived
+
+- name: Debug calculated keepalived virtual IP
+  debug:
+    msg: "Keepalived VIP: {{ keepalived_vip }}"
+  tags: keepalived
+
+- name: Configure keepalived
+  template:
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+  notify: Restart keepalived
+  become: yes
+  tags: keepalived
+
+- name: Ensure keepalived is running
+  service:
+    name: keepalived
+    state: started
+    enabled: yes
+  become: yes
+  tags: keepalived

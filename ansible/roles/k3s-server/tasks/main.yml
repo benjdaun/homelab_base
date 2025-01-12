@@ -1,6 +1,10 @@
 ---
-- include_tasks: install.yml
+
+- include_tasks: keepalived.yml
+  tags: keepalived
+
+- include_tasks: k3s_install.yml
   when: inventory_hostname == groups['master'][0]
 
-- include_tasks: join.yml
+- include_tasks: k3s_join.yml
   when: inventory_hostname != groups['master'][0]
