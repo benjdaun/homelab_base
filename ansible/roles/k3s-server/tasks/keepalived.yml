@@ -11,11 +11,6 @@
     keepalived_vip: "{{ groups['master'][0] | ansible.utils.ipmath(2) }}"
   tags: keepalived
 
-- name: Debug calculated keepalived virtual IP
-  debug:
-    msg: "Keepalived VIP: {{ keepalived_vip }}"
-  tags: keepalived
-
 - name: Configure keepalived
   template:
     src: keepalived.conf.j2

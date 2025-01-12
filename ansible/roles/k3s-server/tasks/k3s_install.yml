@@ -15,13 +15,13 @@
 - name: Retrieve kubeconfig file from the first master node
   fetch:
     src: /etc/rancher/k3s/k3s.yaml
-    dest: ./kubeconfig
+    dest: "{{ project_dir }}/kubeconfig"
     flat: yes
   become: yes
 
 - name: Replace server IP in kubeconfig file
   lineinfile:
-    path: ./kubeconfig
+    path: "{{ project_dir }}/kubeconfig"
     regexp: 'https://127\.0\.0\.1:6443'
     line: "    server: https://{{ keepalived_vip }}:6443"
   delegate_to: localhost
@@ -35,6 +35,3 @@
   set_fact:
     k3s_cluster_token: "{{ k3s_token.stdout }}"
 
-- name: Debug K3s cluster token (optional)
-  debug:
-    msg: "K3s cluster token is {{ k3s_cluster_token }}"
