@@ -1,0 +1,10 @@
+servers:
+  quantity: 3
+  cpu: 2
+  ram: 7G
+  disk: 20G
+agents:
+  quantity: 0
+  cpu: 1
+  ram: 4G
+  disk: 10G

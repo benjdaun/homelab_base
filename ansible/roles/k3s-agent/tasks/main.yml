@@ -1,0 +1,10 @@
+---
+- name: Fetch K3s server token from first master
+  set_fact:
+    k3s_cluster_token: "{{ hostvars[groups['master'][0]]['k3s_cluster_token'] }}"
+
+- name: Join agent to the cluster
+  shell: |
+    curl -sfL https://get.k3s.io | K3S_TOKEN={{ k3s_cluster_token }} sh -s - agent \
+      --server https://{{ groups['master'][0] }}:6443
+  become: yes

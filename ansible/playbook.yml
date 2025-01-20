@@ -1,18 +1,13 @@
 ---
-- hosts: k3s_server
-  become: true
-  tasks:
-    - name: Install k3s on the server
-      include_role:
-        name: k3s_server
+- hosts: master
+  become: yes
+  roles:
+    - k3s-server
 
-- hosts: k3s_agent
-  become: true
-  tasks:
-    - name: Install k3s on the agent
-      include_role:
-        name: k3s_agent
-
+- hosts: agent
+  become: yes
+  roles:
+    - k3s-agent
 
 - hosts: localhost
   become: true
@@ -26,24 +21,6 @@
         kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml && \
         kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml && \
         kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
-
-- hosts: localhost
-  become: true
-  become_user: benjdaun
-  tasks:
-    - block:
-        - name: Try to install Cilium
-          shell: |
-            cilium install -f /home/benjdaun/homelab_base/ansible/cilium-values.yaml
-          register: cilium_install_result
-          ignore_errors: true
-
-      rescue:
-        - name: Cilium install failed, trying upgrade instead
-          shell: |
-            cilium upgrade -f /home/benjdaun/homelab_base/ansible/cilium-values.yaml
-          when: cilium_install_result.rc != 0  # Run upgrade only if install failed
-
 
 
 - hosts: all

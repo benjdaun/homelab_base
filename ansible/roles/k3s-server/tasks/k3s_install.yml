@@ -1,0 +1,38 @@
+---
+- name: Install K3s server
+  shell: |
+    curl -sfL https://get.k3s.io | sh -s - server \
+      --cluster-init \
+      --advertise-address={{ groups['master'][0] }} \
+      --node-ip {{ groups['master'][0] }} \
+      --tls-san={{ keepalived_vip }} \
+      --disable traefik \
+      --disable servicelb \
+      --node-label dev \
+      --node-name {{ hostvars[inventory_hostname]['node_name'] }}
+  become: yes
+  check_mode: false
+
+- name: Retrieve kubeconfig file from the first master node
+  fetch:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: "{{ project_dir }}/kubeconfig"
+    flat: yes
+  become: yes
+
+- name: Replace server IP in kubeconfig file
+  lineinfile:
+    path: "{{ project_dir }}/kubeconfig"
+    regexp: 'https://127\.0\.0\.1:6443'
+    line: "    server: https://{{ keepalived_vip }}:6443"
+  delegate_to: localhost
+
+- name: Retrieve K3s server token
+  shell: cat /var/lib/rancher/k3s/server/token
+  register: k3s_token
+  become: yes
+
+- name: Set K3s token as a fact
+  set_fact:
+    k3s_cluster_token: "{{ k3s_token.stdout }}"
+

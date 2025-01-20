@@ -8,7 +8,7 @@ metadata:
 
 spec:
   parentRefs:
-    - name: cilium-gateway
+    - name: traefik-gateway
       namespace: kube-system
   hostnames:
     - longhorn.beavertech.xyz
