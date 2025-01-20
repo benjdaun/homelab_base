@@ -90,7 +90,7 @@ for ((i=1; i<=NUM_AGENTS; i++)); do
   ssh -o "StrictHostKeyChecking=no" ubuntu@"$IP" "echo Connection successful!"
 
   # Add the VM to the inventory file
-  echo "$IP ansible_user=ubuntu ansible_ssh_private_key_file=$HOME/.ssh/id_rsa_homelab net_interface=ens3" >> "$INVENTORY_FILE"
+  echo "$IP node_name=$VM ansible_user=ubuntu ansible_ssh_private_key_file=$HOME/.ssh/id_rsa_homelab net_interface=ens3" >> "$INVENTORY_FILE"
 done
 
 echo -e "\nAnsible inventory file created at $INVENTORY_FILE:"
