@@ -8,7 +8,8 @@
       --tls-san={{ keepalived_vip }} \
       --disable traefik \
       --disable servicelb \
-      --node-label dev
+      --node-label dev \
+      --node-name {{ hostvars[inventory_hostname]['node_name'] }}
   become: yes
   check_mode: false
 

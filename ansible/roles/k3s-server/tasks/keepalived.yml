@@ -18,11 +18,3 @@
   notify: Restart keepalived
   become: yes
   tags: keepalived
-
-- name: Ensure keepalived is running
-  service:
-    name: keepalived
-    state: started
-    enabled: yes
-  become: yes
-  tags: keepalived

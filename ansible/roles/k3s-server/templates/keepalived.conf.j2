@@ -1,6 +1,6 @@
 vrrp_instance VI_1 {
     state {{ 'MASTER' if inventory_hostname == groups['master'][0] else 'BACKUP' }}
-    interface ens3
+    interface {{ net_interface }}
     virtual_router_id 51
     priority {{ 100 if inventory_hostname == groups['master'][0] else 90 }}
     advert_int 1

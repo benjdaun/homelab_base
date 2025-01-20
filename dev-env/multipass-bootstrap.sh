@@ -2,7 +2,7 @@
 
 # Configuration
 BASE_DIR=$(git rev-parse --show-toplevel)
-VM_SET_FILE="$BASE_DIR/dev-env/multipass-vm-set.yaml" # Path to the VM set file
+VM_SET_FILE="$BASE_DIR/dev-env/multipass-vm-set.yml" # Path to the VM set file
 CPUS=3                         # Number of CPUs per VM
 MEMORY="7G"                    # RAM per VM
 DISK="20G"                     # Disk space per VM
@@ -90,7 +90,7 @@ for ((i=1; i<=NUM_AGENTS; i++)); do
   ssh -o "StrictHostKeyChecking=no" ubuntu@"$IP" "echo Connection successful!"
 
   # Add the VM to the inventory file
-  echo "$IP ansible_user=ubuntu ansible_ssh_private_key_file=$HOME/.ssh/id_rsa_homelab" >> "$INVENTORY_FILE"
+  echo "$IP ansible_user=ubuntu ansible_ssh_private_key_file=$HOME/.ssh/id_rsa_homelab net_interface=ens3" >> "$INVENTORY_FILE"
 done
 
 echo -e "\nAnsible inventory file created at $INVENTORY_FILE:"
