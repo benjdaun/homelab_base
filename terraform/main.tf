@@ -9,6 +9,7 @@ resource "helm_release" "argo_cd" {
   values = [
     file("${path.module}/argocd-values.yaml") # External values.yaml file (optional)
   ]
+  
 
   create_namespace = true # Create namespace if it doesn't exist
 
@@ -50,7 +51,7 @@ resource "kubernetes_secret" "bitwarden_cli" {
   }
   data = {
     BW_HOST = "https://vault.bitwarden.com/"
-    BW_USERNAME = "benjamindaunoravicius@gmail.com"
+    BW_USERNAME = var.bitwarden_username
     BW_PASSWORD = var.bitwarden_password
 
   }

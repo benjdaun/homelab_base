@@ -7,6 +7,7 @@ if [ -z "$1" ]; then
 fi
 
 INVENTORY_FILE="$1"
+ENVIRONMENT="$2"
 PLAYBOOK_FILE="playbook.yml"
 
 # Check if inventory file exists
@@ -16,4 +17,7 @@ if [ ! -f "$INVENTORY_FILE" ]; then
 fi
 
 # Execute the ansible-playbook command
-ansible-playbook -i "$INVENTORY_FILE" "$PLAYBOOK_FILE" -K -e "inventory_file=$INVENTORY_FILE" -e "unique_hash=$(cat $INVENTORY_FILE | sha256sum | cut -c1-5)"
+ansible-playbook -i "$INVENTORY_FILE" "$PLAYBOOK_FILE" -K \
+-e "inventory_file=$INVENTORY_FILE" \
+-e "unique_hash=$(cat $INVENTORY_FILE | sha256sum | cut -c1-5) \
+-e env=$ENVIRONMENT"
