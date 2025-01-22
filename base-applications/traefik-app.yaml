@@ -13,7 +13,7 @@ spec:
       valueFiles:
       - $values/configuration/traefik-values.yaml
   - repoURL: https://github.com/benjdaun/homelab_base
-    targetRevision: "vagrant-dev-environment"
+    targetRevision: "main"
     ref: values
 
   destination:

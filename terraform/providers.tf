@@ -19,6 +19,6 @@ terraform {
 
 # Configure the Bitwarden Provider
 provider "bitwarden" {
-  email = "benjamindaunoravicius@gmail.com"
+  email           = "benjamindaunoravicius@gmail.com"
   master_password = var.bitwarden_password
 }

@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: "https://github.com/benjdaun/homelab_base"
-    targetRevision: "vagrant-dev-environment"
+    targetRevision: "main"
     path: "base-applications"
   destination:
     server: "https://kubernetes.default.svc"
