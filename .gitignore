@@ -1,7 +1,9 @@
 terraform/.terraform/*
-./bitwarden/*
+.bitwarden/*
+.vscode
 *tfstate*
 *tfvars
+terraform/.*
 downloaded-charts/*
 ansible/inventory/*
 kubeconfigs/*
