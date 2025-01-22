@@ -3,3 +3,5 @@ terraform/.terraform/*
 *tfstate*
 *tfvars
 downloaded-charts/*
+ansible/inventory/*
+kubeconfigs/*
