@@ -9,12 +9,9 @@ spec:
   - repoURL: https://metallb.github.io/metallb
     targetRevision: 0.14.9 # Use the desired chart version
     chart: metallb
-    helm:
-      valueFiles:
-      - $values/configuration/metallb-values.yaml
+
   - repoURL: https://github.com/benjdaun/homelab_base
     targetRevision: main
-    ref: values
 
   destination:
     server: https://kubernetes.default.svc
