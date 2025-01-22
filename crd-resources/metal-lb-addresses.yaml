@@ -1,0 +1,21 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: homelab-address-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 10.33.114.49/32
+    - 10.33.114.51/32
+    - 10.33.114.144/32
+    - 10.33.114.193/32
+  autoAssign: true
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: homelab-l2-advertisement
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - homelab-address-pool

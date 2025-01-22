@@ -1,28 +1,28 @@
-apiVersion: gateway.networking.k8s.io/v1                                                               
-kind: HTTPRoute                                                                                        
-metadata:                                                                                                                                                                                    
-  labels:                                                                                              
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  labels:
     argocd.argoproj.io/instance: crd-resources
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: "argo.dev.beavertech.xyz"                                                         
-  name: argo-ui                                                                                    
-  namespace: argocd                                                                                                                                    
-spec:                                                                                                  
-  hostnames:                                                                                           
-  - argo.dev.beavertech.xyz                                                                            
-  parentRefs:                                                                                          
-  - group: gateway.networking.k8s.io                                                                   
-    kind: Gateway                                                                                      
-    name: traefik-gateway                                                                               
-    namespace: kube-system                                                                             
-  rules:                                                                                               
-  - backendRefs:                                                                                       
-    - group: ""                                                                                        
-      kind: Service                                                                                    
-      name: argocd-server                                                                         
-      port: 443                                                                                         
-      weight: 1                                                                                        
-    matches:                                                                                           
-    - path:                                                                                            
-        type: PathPrefix                                                                               
-        value: /    
+    external-dns.alpha.kubernetes.io/hostname: "argo.dev.beavertech.xyz"
+  name: argo-ui
+  namespace: traefik
+spec:
+  hostnames:
+    - argo.dev.beavertech.xyz
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: traefik-gateway
+      namespace: kube-system
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: argocd-server
+          port: 443
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
