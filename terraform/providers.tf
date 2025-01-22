@@ -1,10 +1,10 @@
 provider "kubernetes" {
-  config_path = "~/.kube/config" # Adjust if your kubeconfig is elsewhere
+  config_path = var.kubeconfig_file
 }
 
 provider "helm" {
   kubernetes {
-    config_path = "~/.kube/config" # Adjust if your kubeconfig is elsewhere
+    config_path = var.kubeconfig_file
   }
 }
 
