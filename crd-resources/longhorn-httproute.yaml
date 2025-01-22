@@ -9,7 +9,7 @@ metadata:
 spec:
   parentRefs:
     - name: traefik-gateway
-      namespace: kube-system
+      namespace: traefik
   hostnames:
     - longhorn.dev.beavertech.xyz
   rules:

@@ -14,7 +14,7 @@ spec:
     - group: gateway.networking.k8s.io
       kind: Gateway
       name: traefik-gateway
-      namespace: kube-system
+      namespace: traefik
   rules:
     - backendRefs:
         - group: ""
