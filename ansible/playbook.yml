@@ -23,7 +23,7 @@
   tasks:
     - name: Apply Kubernetes Gateway API CRDs
       shell: |
-        export KUBECONFIG="{{ project_dir }}/kubeconfigs/{{ unique_hash }}-kubeconfig"
+        export KUBECONFIG="{{ project_dir }}/kubeconfigs/{{ env }}/{{ unique_hash }}-kubeconfig"
         kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml && \
         kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml && \
         kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml && \

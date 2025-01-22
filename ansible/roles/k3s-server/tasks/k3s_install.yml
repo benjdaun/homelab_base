@@ -16,13 +16,13 @@
 - name: Retrieve kubeconfig file from the first master node
   fetch:
     src: /etc/rancher/k3s/k3s.yaml
-    dest: "{{ project_dir }}/kubeconfigs/{{ unique_hash }}-kubeconfig"
+    dest: "{{ project_dir }}/kubeconfigs/{{ env }}/{{ unique_hash }}-kubeconfig"
     flat: yes
   become: yes
 
 - name: Replace server IP in kubeconfig file
   lineinfile:
-    path: "{{ project_dir }}/kubeconfigs/{{ unique_hash }}-kubeconfig"
+    path: "{{ project_dir }}/kubeconfigs/{{ env }}/{{ unique_hash }}-kubeconfig"
     regexp: 'https://127\.0\.0\.1:6443'
     line: "    server: https://{{ keepalived_vip }}:6443"
   delegate_to: localhost
