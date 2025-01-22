@@ -18,7 +18,7 @@ spec:
         from: All  
     protocol: HTTPS
     port: 443
-    hostname: "*.beavertech.xyz"
+    hostname: "*.dev.beavertech.xyz"
     tls:
       certificateRefs:
       - kind: Secret

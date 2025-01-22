@@ -6,7 +6,7 @@ metadata:
 spec:
   secretName: beavertech-prod-cert # The secret that stores the TLS certificate
   dnsNames:
-    - "*.beavertech.xyz"
+    - "*.dev.beavertech.xyz"
   issuerRef:
     name: homelab-prod-issuer # Name of your ClusterIssuer
     kind: ClusterIssuer

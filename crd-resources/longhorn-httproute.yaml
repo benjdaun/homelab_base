@@ -4,14 +4,14 @@ metadata:
   name: longhorn-ui
   namespace: longhorn-system
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: "longhorn.beavertech.xyz"
+    external-dns.alpha.kubernetes.io/hostname: "longhorn.dev.beavertech.xyz"
 
 spec:
   parentRefs:
     - name: traefik-gateway
       namespace: kube-system
   hostnames:
-    - longhorn.beavertech.xyz
+    - longhorn.dev.beavertech.xyz
   rules:
     - matches:
         - path:

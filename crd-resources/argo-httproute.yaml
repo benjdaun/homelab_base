@@ -2,12 +2,14 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute                                                                                        
 metadata:                                                                                                                                                                                    
   labels:                                                                                              
-    argocd.argoproj.io/instance: crd-resources                                                         
+    argocd.argoproj.io/instance: crd-resources
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "argo.dev.beavertech.xyz"                                                         
   name: argo-ui                                                                                    
   namespace: argocd                                                                                                                                    
 spec:                                                                                                  
   hostnames:                                                                                           
-  - argo.beavertech.xyz                                                                            
+  - argo.dev.beavertech.xyz                                                                            
   parentRefs:                                                                                          
   - group: gateway.networking.k8s.io                                                                   
     kind: Gateway                                                                                      
