@@ -1,0 +1,5 @@
+project_dir: "/home/benjdaun/homelab_base"
+github_username: "YOUR_GITHUB_USERNAME"
+github_token: "YOUR_GITHUB_TOKEN"
+bitwarden_username: "YOUR_BITWARDEN_USERNAME"
+bitwarden_password: "YOUR_BITWARDEN_PASSWORD"

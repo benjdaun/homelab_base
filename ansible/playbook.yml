@@ -49,3 +49,10 @@
       ansible.builtin.systemd:
         name: iscsid
         state: started
+
+- hosts: localhost
+  become: true
+  become_user: benjdaun
+  roles:
+    - argocd
+
