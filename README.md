@@ -34,6 +34,19 @@ The project is organized into several key directories, each serving a specific p
 
 3. **Install Core Applications**: Argo CD pulls the contents of the base-applications and CRD resources into the cluster. These are kind of like a "platform" that just supply prerequisites to get things running nicely, like certificates, DNS, redundant storage, etc.
 
+### Assigning Static IP Addresses
+
+Each node should keep the same IP address across reboots. You can configure this directly on the node without touching the router:
+
+1. Choose an unused IP address and know your network gateway (for example `192.168.1.1`).
+2. Run the helper script `setup-new-node.sh` with sudo to set the hostname, update packages, and apply the static address immediately:
+
+```bash
+sudo ./setup-new-node.sh <hostname> <interface> <ip-address> <gateway> [dns]
+```
+
+The script writes a small netplan file at `/etc/netplan/01-homelab-static.yaml` and runs `netplan apply` so the IP change is effective right away. It also prints the MAC address of the interface for reference.
+
 
 ## External Dependencies
 
