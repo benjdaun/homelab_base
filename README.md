@@ -47,6 +47,15 @@ sudo ./setup-new-node.sh <hostname> <interface> <ip-address> <gateway> [dns]
 
 The script writes a small netplan file at `/etc/netplan/01-homelab-static.yaml` and runs `netplan apply` so the IP change is effective right away. It also prints the MAC address of the interface for reference.
 
+### Copying the Helper Script
+
+If the node received its address via DHCP, copy the helper script over with `scp` before running it:
+
+```bash
+scp setup-new-node.sh <user>@<node-ip>:/tmp/
+ssh <user>@<node-ip> sudo bash /tmp/setup-new-node.sh <hostname> <interface> <ip-address> <gateway> [dns]
+```
+
 
 ## External Dependencies
 
