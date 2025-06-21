@@ -18,6 +18,6 @@ fi
 
 # Execute the ansible-playbook command
 ansible-playbook -i "$INVENTORY_FILE" "$PLAYBOOK_FILE" -K \
--e "inventory_file=$INVENTORY_FILE" \
--e "unique_hash=$(cat $INVENTORY_FILE | sha256sum | cut -c1-5) \
--e env=$ENVIRONMENT"
+  -e "inventory_file=$INVENTORY_FILE" \
+  -e "unique_hash=$(sha256sum < "$INVENTORY_FILE" | cut -c1-5)" \
+  -e "env=$ENVIRONMENT"
