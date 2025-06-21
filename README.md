@@ -1,6 +1,6 @@
 # Homelab Base
 
-This repository is designed to facilitate the setup and management of a Kubernetes-based homelab environment. It leverages a combination of Ansible, Helm, and Terraform to deploy and configure various applications and services on a Kubernetes cluster.
+This repository is designed to facilitate the setup and management of a Kubernetes-based homelab environment. It primarily leverages Ansible and Helm to deploy and configure services on a Kubernetes cluster.  Terraform is available for infrastructure provisioning but is no longer used for installing in‑cluster applications like Argo CD.
 
 ## Project Structure
 
@@ -16,7 +16,7 @@ The project is organized into several key directories, each serving a specific p
 
 - **downloaded-charts**: Contains downloaded Helm charts for various applications.
 
-- **terraform**: Contains Terraform configuration files and scripts for managing infrastructure resources. Key files include `argocd-values.yaml`, `base-application.yaml`, `main.tf`, `providers.tf`, and `variables.tf`.
+- **terraform**: Optional Terraform configuration used for infrastructure provisioning. Key files include `main.tf`, `providers.tf`, and `variables.tf`.
 
 ## Getting Started
 
@@ -24,13 +24,13 @@ The project is organized into several key directories, each serving a specific p
 
 - **Helm**: Ensure Helm is installed to manage Kubernetes applications.
 - **Ansible**: Required for executing playbooks to configure the K3s cluster.
-- **Terraform**: Used for infrastructure management and provisioning.
+- **Terraform**: Optional, used only for infrastructure provisioning outside the cluster.
 
 ### Installation
 
 1. **Install K3s**: Use the Ansible playbooks in the `ansible` directory to set up the K3s server and agent.
 
-2. **Install Argo CD**: The first thing to be installed on the cluster is Argo CD, along with the root application, and some secrets tooling.
+2. **Install Argo CD**: Use the provided Ansible role to install Argo CD and bootstrap the root application and required secrets.
 
 3. **Install Core Applications**: Argo CD pulls the contents of the base-applications and CRD resources into the cluster. These are kind of like a "platform" that just supply prerequisites to get things running nicely, like certificates, DNS, redundant storage, etc.
 

@@ -1,0 +1,71 @@
+---
+- name: Add Argo CD Helm repository
+  shell: |
+    helm repo add argo https://argoproj.github.io/argo-helm
+    helm repo update
+  environment:
+    KUBECONFIG: "{{ project_dir }}/kubeconfigs/{{ env }}/{{ unique_hash }}-kubeconfig"
+  args:
+    creates: "{{ project_dir }}/kubeconfigs/{{ env }}/.argo_repo_added"
+
+- name: Mark repo added
+  file:
+    path: "{{ project_dir }}/kubeconfigs/{{ env }}/.argo_repo_added"
+    state: touch
+
+- name: Install or upgrade Argo CD
+  shell: |
+    helm upgrade --install argocd argo/argo-cd \
+      --namespace argocd \
+      --create-namespace \
+      --version 7.6.5 \
+      -f {{ project_dir }}/terraform/argocd-values.yaml \
+      -f {{ project_dir }}/terraform/argocd-values-{{ env }}.yaml
+  environment:
+    KUBECONFIG: "{{ project_dir }}/kubeconfigs/{{ env }}/{{ unique_hash }}-kubeconfig"
+
+- name: Ensure secrets-management namespace exists
+  shell: |
+    kubectl get namespace secrets-management || kubectl create namespace secrets-management
+  environment:
+    KUBECONFIG: "{{ project_dir }}/kubeconfigs/{{ env }}/{{ unique_hash }}-kubeconfig"
+
+- name: Create Bitwarden CLI secret
+  shell: |
+    kubectl -n secrets-management apply -f - <<'EOM'
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: bitwarden-cli
+    stringData:
+      BW_HOST: "https://vault.bitwarden.com/"
+      BW_USERNAME: "{{ bitwarden_username }}"
+      BW_PASSWORD: "{{ bitwarden_password }}"
+    EOM
+  environment:
+    KUBECONFIG: "{{ project_dir }}/kubeconfigs/{{ env }}/{{ unique_hash }}-kubeconfig"
+
+- name: Create GitHub repository credentials
+  shell: |
+    kubectl -n argocd apply -f - <<'EOM'
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: github-homelab-cred
+      labels:
+        argocd.argoproj.io/secret-type: repository
+    stringData:
+      username: "{{ github_username }}"
+      password: "{{ github_token }}"
+      project: "default"
+      type: "git"
+      url: "https://github.com/benjdaun/homelab_base"
+    EOM
+  environment:
+    KUBECONFIG: "{{ project_dir }}/kubeconfigs/{{ env }}/{{ unique_hash }}-kubeconfig"
+
+- name: Deploy base Argo CD application
+  shell: |
+    kubectl apply -f {{ project_dir }}/terraform/base-application.yaml
+  environment:
+    KUBECONFIG: "{{ project_dir }}/kubeconfigs/{{ env }}/{{ unique_hash }}-kubeconfig"
