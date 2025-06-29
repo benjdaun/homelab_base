@@ -1,36 +1,61 @@
 ---
-- name: Install K3s server
+- name: Check if K3s is already installed
+  stat:
+    path: /usr/local/bin/k3s
+  register: k3s_binary
+
+- name: Install K3s server (first master)
   shell: |
     curl -sfL https://get.k3s.io | sh -s - server \
       --cluster-init \
-      --advertise-address={{ groups['master'][0] }} \
-      --node-ip {{ groups['master'][0] }} \
+      --advertise-address={{ ansible_default_ipv4.address }} \
+      --node-ip {{ ansible_default_ipv4.address }} \
       --tls-san={{ keepalived_vip }} \
+      --tls-san={{ ansible_default_ipv4.address }} \
       --disable traefik \
       --disable servicelb \
-      --node-label dev \
       --node-name {{ hostvars[inventory_hostname]['node_name'] }}
   become: yes
-  check_mode: false
+  when: not k3s_binary.stat.exists
+  register: k3s_install_result
+
+- name: Wait for K3s to be ready
+  wait_for:
+    port: 6443
+    host: "{{ ansible_default_ipv4.address }}"
+    delay: 10
+    timeout: 300
+  when: k3s_install_result.changed
+
+- name: Ensure kubeconfig directory exists
+  file:
+    path: "{{ project_dir }}/kubeconfigs/{{ env | default('dev') }}"
+    state: directory
+    mode: '0755'
+  delegate_to: localhost
+  become: no
 
 - name: Retrieve kubeconfig file from the first master node
   fetch:
     src: /etc/rancher/k3s/k3s.yaml
-    dest: "{{ project_dir }}/kubeconfigs/{{ env }}/{{ unique_hash }}-kubeconfig"
+    dest: "{{ project_dir }}/kubeconfigs/{{ env | default('dev') }}/{{ unique_hash }}-kubeconfig"
     flat: yes
   become: yes
 
-- name: Replace server IP in kubeconfig file
+- name: Replace server IP in kubeconfig file to use VIP
   lineinfile:
-    path: "{{ project_dir }}/kubeconfigs/{{ env }}/{{ unique_hash }}-kubeconfig"
+    path: "{{ project_dir }}/kubeconfigs/{{ env | default('dev') }}/{{ unique_hash }}-kubeconfig"
     regexp: 'https://127\.0\.0\.1:6443'
     line: "    server: https://{{ keepalived_vip }}:6443"
   delegate_to: localhost
+  become: no
 
 - name: Retrieve K3s server token
   shell: cat /var/lib/rancher/k3s/server/token
   register: k3s_token
   become: yes
+  retries: 5
+  delay: 5
 
 - name: Set K3s token as a fact
   set_fact:

@@ -1,7 +1,7 @@
 servers:
   quantity: 3
-  cpu: 2
-  ram: 7G
+  cpu: 3
+  ram: 8G
   disk: 20G
 agents:
   quantity: 0

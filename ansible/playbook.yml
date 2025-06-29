@@ -1,51 +1,42 @@
 ---
-- hosts: localhost
-  become: true
+- name: Display execution information
+  hosts: localhost
+  gather_facts: false
   run_once: true
   tasks:
     - name: Display the unique hash
       debug:
         msg: "Unique hash for this execution: {{ unique_hash }}"
 
-- hosts: master
+- name: Set up K3s servers with keepalived
+  hosts: master
   become: yes
+  serial: 1
   roles:
     - k3s-server
 
-- hosts: agent
-  become: yes
-  roles:
-    - k3s-agent
-
-- hosts: localhost
-  become: true
-  become_user: benjdaun
+- name: Verify cluster status
+  hosts: localhost
+  gather_facts: false
+  run_once: true
   tasks:
-    - name: Apply Kubernetes Gateway API CRDs
+    - name: Display kubeconfig location
+      debug:
+        msg: "Kubeconfig available at: {{ project_dir }}/kubeconfigs/{{ env | default('dev') }}/{{ unique_hash }}-kubeconfig"
+    
+    - name: Test cluster connectivity
       shell: |
-        export KUBECONFIG="{{ project_dir }}/kubeconfigs/{{ env }}/{{ unique_hash }}-kubeconfig"
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml && \
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml && \
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml && \
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml && \
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml && \
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
-
-- hosts: all
-  become: yes
-  tasks:
-    - name: Install open-iscsi package
-      ansible.builtin.package:
-        name: open-iscsi
-        state: present
-
-    - name: Enable and start iscsid service
-      ansible.builtin.systemd:
-        name: iscsid
-        enabled: yes
-        state: started
-
-    - name: Ensure iscsid daemon is running
-      ansible.builtin.systemd:
-        name: iscsid
-        state: started
+        export KUBECONFIG="{{ project_dir }}/kubeconfigs/{{ env | default('dev') }}/{{ unique_hash }}-kubeconfig"
+        kubectl get nodes -o wide
+      register: cluster_nodes
+      ignore_errors: yes
+    
+    - name: Display cluster nodes
+      debug:
+        msg: "{{ cluster_nodes.stdout_lines }}"
+      when: cluster_nodes.rc == 0
+    
+    - name: Display error if cluster not accessible
+      debug:
+        msg: "Unable to connect to cluster: {{ cluster_nodes.stderr }}"
+      when: cluster_nodes.rc != 0

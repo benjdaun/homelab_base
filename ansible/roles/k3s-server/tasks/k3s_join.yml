@@ -1,7 +1,36 @@
 ---
+- name: Check if K3s is already installed
+  stat:
+    path: /usr/local/bin/k3s
+  register: k3s_binary
+
+- name: Wait for first master to be ready
+  wait_for:
+    port: 6443
+    host: "{{ hostvars[groups['master'][0]]['ansible_default_ipv4']['address'] }}"
+    delay: 5
+    timeout: 300
+  when: not k3s_binary.stat.exists
+
 - name: Join additional servers to the cluster
   shell: |
     curl -sfL https://get.k3s.io | K3S_TOKEN={{ hostvars[groups['master'][0]]['k3s_cluster_token'] }} sh -s - server \
-      --server https://{{ keepalived_vip }}:6443 --node-name {{ hostvars[inventory_hostname]['node_name'] }}
+      --server https://{{ hostvars[groups['master'][0]]['ansible_default_ipv4']['address'] }}:6443 \
+      --advertise-address={{ ansible_default_ipv4.address }} \
+      --node-ip {{ ansible_default_ipv4.address }} \
+      --tls-san={{ keepalived_vip }} \
+      --tls-san={{ ansible_default_ipv4.address }} \
+      --disable traefik \
+      --disable servicelb \
+      --node-name {{ hostvars[inventory_hostname]['node_name'] }}
   become: yes
-  check_mode: false
+  when: not k3s_binary.stat.exists
+  register: k3s_join_result
+
+- name: Wait for K3s to be ready on this node
+  wait_for:
+    port: 6443
+    host: "{{ ansible_default_ipv4.address }}"
+    delay: 10
+    timeout: 180
+  when: k3s_join_result.changed

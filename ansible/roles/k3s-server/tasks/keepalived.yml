@@ -3,18 +3,38 @@
   apt:
     name: keepalived
     state: present
+    update_cache: yes
   become: yes
   tags: keepalived
 
-- name: Calculate keepalived virtual IP
+- name: Get first master IP address
   set_fact:
-    keepalived_vip: "{{ groups['master'][0] | ansible.utils.ipmath(2) }}"
+    first_master_ip: "{{ hostvars[groups['master'][0]]['ansible_default_ipv4']['address'] }}"
+  tags: keepalived
+
+- name: Calculate keepalived virtual IP (add 10 to first master IP)
+  set_fact:
+    keepalived_vip: "{{ first_master_ip | ansible.utils.ipmath(10) }}"
+  tags: keepalived
+
+- name: Display calculated VIP
+  debug:
+    msg: "Keepalived VIP will be: {{ keepalived_vip }}"
   tags: keepalived
 
 - name: Configure keepalived
   template:
     src: keepalived.conf.j2
     dest: /etc/keepalived/keepalived.conf
+    backup: yes
   notify: Restart keepalived
+  become: yes
+  tags: keepalived
+
+- name: Enable and start keepalived
+  systemd:
+    name: keepalived
+    enabled: yes
+    state: started
   become: yes
   tags: keepalived

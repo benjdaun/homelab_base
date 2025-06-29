@@ -1,10 +1,14 @@
 ---
-
-- include_tasks: keepalived.yml
+- name: Install and configure keepalived
+  include_tasks: keepalived.yml
   tags: keepalived
 
-- include_tasks: k3s_install.yml
+- name: Install K3s on first master
+  include_tasks: k3s_install.yml
   when: inventory_hostname == groups['master'][0]
+  tags: k3s_install
 
-- include_tasks: k3s_join.yml
+- name: Join additional masters to cluster
+  include_tasks: k3s_join.yml
   when: inventory_hostname != groups['master'][0]
+  tags: k3s_join
