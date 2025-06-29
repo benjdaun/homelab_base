@@ -15,6 +15,12 @@
   roles:
     - k3s-server
 
+- name: Set up K3s agents
+  hosts: agent
+  become: yes
+  roles:
+    - k3s-agent
+
 - name: Verify cluster status
   hosts: localhost
   gather_facts: false

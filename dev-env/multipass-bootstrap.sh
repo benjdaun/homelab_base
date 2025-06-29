@@ -31,66 +31,98 @@ fi
 NUM_MASTERS=$(yq e '.servers.quantity' "$VM_SET_FILE")
 NUM_AGENTS=$(yq e '.agents.quantity' "$VM_SET_FILE")
 
-# Prepare the inventory file
-echo "[master]" > "$INVENTORY_FILE"
-
 # Create and configure master VMs
 for ((i=1; i<=NUM_MASTERS; i++)); do
   VM="master-$i"
-  echo "Launching $VM..."
-  multipass launch --name "$VM" --cpus "$CPUS" --memory "$MEMORY" --disk "$DISK"
+  
+  # Check if VM already exists
+  if multipass info "$VM" &>/dev/null; then
+    echo "$VM already exists – skipping launch."
+  else
+    echo "Launching $VM..."
+    multipass launch --name "$VM" --cpus "$CPUS" --memory "$MEMORY" --disk "$DISK"
+  fi
 
-  echo "Configuring SSH access for $VM..."
-  multipass exec "$VM" -- mkdir -p /home/ubuntu/.ssh
-  multipass exec "$VM" -- bash -c "echo '$(cat "$SSH_KEY")' >> /home/ubuntu/.ssh/authorized_keys"
-  multipass exec "$VM" -- chown -R ubuntu:ubuntu /home/ubuntu/.ssh
-  multipass exec "$VM" -- chmod 600 /home/ubuntu/.ssh/authorized_keys
+  # Configure SSH access (only if VM was just created or needs reconfiguration)
+  if ! multipass exec "$VM" -- test -f /home/ubuntu/.ssh/authorized_keys 2>/dev/null || ! grep -q "$(cat "$SSH_KEY" | cut -d' ' -f2)" <(multipass exec "$VM" -- cat /home/ubuntu/.ssh/authorized_keys 2>/dev/null); then
+    echo "Configuring SSH access for $VM..."
+    multipass exec "$VM" -- mkdir -p /home/ubuntu/.ssh
+    multipass exec "$VM" -- bash -c "echo '$(cat "$SSH_KEY")' >> /home/ubuntu/.ssh/authorized_keys"
+    multipass exec "$VM" -- chown -R ubuntu:ubuntu /home/ubuntu/.ssh
+    multipass exec "$VM" -- chmod 600 /home/ubuntu/.ssh/authorized_keys
+  else
+    echo "SSH access already configured for $VM"
+  fi
 
   # Fetch the IP address
   IP=$(multipass info "$VM" | grep IPv4 | awk '{print $2}')
   echo "$VM is running at $IP"
 
-  # Add the VM to known_hosts
-  echo "Adding $VM to known_hosts..."
-  ssh-keyscan -H "$IP" >> "$HOME/.ssh/known_hosts"
+  # Add the VM to known_hosts (if not already present)
+  if ! grep -q "$IP" "$HOME/.ssh/known_hosts" 2>/dev/null; then
+    echo "Adding $VM to known_hosts..."
+    ssh-keyscan -H "$IP" >> "$HOME/.ssh/known_hosts"
+  fi
 
   # Verify SSH connectivity
   echo "Verifying SSH connectivity for $VM..."
   ssh -o "StrictHostKeyChecking=no" ubuntu@"$IP" "echo Connection successful!"
-
-  # Add the VM to the inventory file
-  echo "$IP node_name=$VM ansible_user=ubuntu ansible_ssh_private_key_file=$HOME/.ssh/id_rsa_homelab net_interface=ens3" >> "$INVENTORY_FILE"
 done
-
-# Add agent VMs to the inventory file
-echo "[agent]" >> "$INVENTORY_FILE"
 
 # Create and configure agent VMs
 for ((i=1; i<=NUM_AGENTS; i++)); do
   VM="agent-$i"
-  echo "Launching $VM..."
-  multipass launch --name "$VM" --cpus "$CPUS" --memory "$MEMORY" --disk "$DISK"
+  
+  # Check if VM already exists
+  if multipass info "$VM" &>/dev/null; then
+    echo "$VM already exists – skipping launch."
+  else
+    echo "Launching $VM..."
+    multipass launch --name "$VM" --cpus "$CPUS" --memory "$MEMORY" --disk "$DISK"
+  fi
 
-  echo "Configuring SSH access for $VM..."
-  multipass exec "$VM" -- mkdir -p /home/ubuntu/.ssh
-  multipass exec "$VM" -- bash -c "echo '$(cat "$SSH_KEY")' >> /home/ubuntu/.ssh/authorized_keys"
-  multipass exec "$VM" -- chown -R ubuntu:ubuntu /home/ubuntu/.ssh
-  multipass exec "$VM" -- chmod 600 /home/ubuntu/.ssh/authorized_keys
+  # Configure SSH access (only if VM was just created or needs reconfiguration)
+  if ! multipass exec "$VM" -- test -f /home/ubuntu/.ssh/authorized_keys 2>/dev/null || ! grep -q "$(cat "$SSH_KEY" | cut -d' ' -f2)" <(multipass exec "$VM" -- cat /home/ubuntu/.ssh/authorized_keys 2>/dev/null); then
+    echo "Configuring SSH access for $VM..."
+    multipass exec "$VM" -- mkdir -p /home/ubuntu/.ssh
+    multipass exec "$VM" -- bash -c "echo '$(cat "$SSH_KEY")' >> /home/ubuntu/.ssh/authorized_keys"
+    multipass exec "$VM" -- chown -R ubuntu:ubuntu /home/ubuntu/.ssh
+    multipass exec "$VM" -- chmod 600 /home/ubuntu/.ssh/authorized_keys
+  else
+    echo "SSH access already configured for $VM"
+  fi
 
   # Fetch the IP address
   IP=$(multipass info "$VM" | grep IPv4 | awk '{print $2}')
   echo "$VM is running at $IP"
 
-  # Add the VM to known_hosts
-  echo "Adding $VM to known_hosts..."
-  ssh-keyscan -H "$IP" >> "$HOME/.ssh/known_hosts"
+  # Add the VM to known_hosts (if not already present)
+  if ! grep -q "$IP" "$HOME/.ssh/known_hosts" 2>/dev/null; then
+    echo "Adding $VM to known_hosts..."
+    ssh-keyscan -H "$IP" >> "$HOME/.ssh/known_hosts"
+  fi
 
   # Verify SSH connectivity
   echo "Verifying SSH connectivity for $VM..."
   ssh -o "StrictHostKeyChecking=no" ubuntu@"$IP" "echo Connection successful!"
+done
 
-  # Add the VM to the inventory file
-  echo "$IP node_name=$VM ansible_user=ubuntu ansible_ssh_private_key_file=$HOME/.ssh/id_rsa_homelab net_interface=ens3" >> "$INVENTORY_FILE"
+# Build the inventory file safely with current IPs
+echo "Building Ansible inventory file..."
+echo "[master]" > "$INVENTORY_FILE"
+for VM in $(multipass list --format csv | awk -F, '/master-/{print $1}'); do
+  if [ -n "$VM" ]; then
+    IP=$(multipass info "$VM" | grep IPv4 | awk '{print $2}')
+    echo "$IP node_name=$VM ansible_user=ubuntu ansible_ssh_private_key_file=$HOME/.ssh/id_rsa_homelab net_interface=ens3" >> "$INVENTORY_FILE"
+  fi
+done
+
+echo "[agent]" >> "$INVENTORY_FILE"
+for VM in $(multipass list --format csv | awk -F, '/agent-/{print $1}'); do
+  if [ -n "$VM" ]; then
+    IP=$(multipass info "$VM" | grep IPv4 | awk '{print $2}')
+    echo "$IP node_name=$VM ansible_user=ubuntu ansible_ssh_private_key_file=$HOME/.ssh/id_rsa_homelab net_interface=ens3" >> "$INVENTORY_FILE"
+  fi
 done
 
 echo -e "\nAnsible inventory file created at $INVENTORY_FILE:"

@@ -20,9 +20,6 @@ DNS="${5:-8.8.8.8}"
 # Set the hostname
 hostnamectl set-hostname "$HOSTNAME"
 
-# Update packages
-apt-get update -y && apt-get upgrade -y
-
 # Configure a static IP using netplan and apply it immediately
 NETPLAN_FILE=/etc/netplan/01-homelab-static.yaml
 cat > "$NETPLAN_FILE" <<EOF

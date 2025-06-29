@@ -18,13 +18,57 @@ The project is organized into several key directories, each serving a specific p
 
 - **terraform**: Contains Terraform configuration files and scripts for managing infrastructure resources. Key files include `argocd-values.yaml`, `base-application.yaml`, `main.tf`, `providers.tf`, and `variables.tf`.
 
+## Agent Capacity and Scaling
+
+### Current Agent Configuration
+
+The development environment is currently configured with:
+- **3 Master nodes**: Each with 3 CPU cores, 8GB RAM, and 20GB disk space
+- **2 Agent nodes**: Each with 1 CPU core, 4GB RAM, and 10GB disk space (increased from 0)
+
+This configuration provides a robust multi-node K3s cluster suitable for development and testing of distributed workloads.
+
+### Scaling Agent Capacity
+
+To scale the number of agent nodes:
+
+1. **Update VM configuration**: Edit `dev-env/multipass-vm-set.yml`:
+   ```yaml
+   agents:
+     quantity: X  # Change from current value (2) to desired number
+     cpu: 1       # Adjust CPU cores per agent if needed
+     ram: 4G      # Adjust RAM per agent if needed
+     disk: 10G    # Adjust disk space per agent if needed
+   ```
+
+2. **Bootstrap new infrastructure**: Run the bootstrap script:
+   ```bash
+   cd dev-env
+   ./multipass-bootstrap.sh
+   ```
+
+3. **Deploy to new agents**: Execute the Ansible playbook:
+   ```bash
+   cd ansible
+   ansible-playbook -i inventory/hosts.ini playbook.yml
+   ```
+
+### Resource Considerations
+
+- **Minimum requirements**: Each agent needs at least 1 CPU core and 2GB RAM
+- **Recommended**: For development workloads, 1-2 CPU cores and 4GB RAM per agent
+- **Scaling up**: Can support 10+ agents depending on host machine resources
+- **Network**: Each agent gets its own IP address managed by Multipass
+
 ## Getting Started
 
 ### Prerequisites
 
-- **Helm**: Ensure Helm is installed to manage Kubernetes applications.
-- **Ansible**: Required for executing playbooks to configure the K3s cluster.
-- **Terraform**: Used for infrastructure management and provisioning.
+- **Multipass**: Required for VM management and provisioning
+- **Helm**: Ensure Helm is installed to manage Kubernetes applications
+- **Ansible**: Required for executing playbooks to configure the K3s cluster
+- **Terraform**: Used for infrastructure management and provisioning
+- **yq**: YAML processor for configuration file manipulation
 
 ### Installation
 
