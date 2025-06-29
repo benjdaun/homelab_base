@@ -4,7 +4,7 @@ servers:
   ram: 8G
   disk: 20G
 agents:
-  quantity: 0
+  quantity: 2      # was 0
   cpu: 1
   ram: 4G
   disk: 10G
